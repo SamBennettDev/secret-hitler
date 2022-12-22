@@ -1,27 +1,35 @@
-import React from "react";
-import Navbar from "./components/Navbar";
-import Chat from "./components/Chat";
-
-import { auth } from "./firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
-
-const style = {
-  appContainer: `max-w-[728px] mx-auto text-center`,
-  sectionContainer: `flex flex-col h-[90vh] bg-gray-100 mt-10 shadow-xl border relative`,
-};
+import React, { useState } from "react";
+import JoinGame from "./components/JoinGame";
+import WaitingForPlayers from "./components/WaitingForPlayers";
 
 function App() {
-  const [user] = useAuthState(auth);
-  //  console.log(user)
-  return (
-    <div className={style.appContainer}>
-      <section className="{style.sectionContainer}">
-        {/* Navbar */}
-        <Navbar />
-        {user ? <Chat /> : null}
-      </section>
-    </div>
-  );
+  const [currentUser, setCurrentUser] = useState(null);
+  const [gameId, setGameId] = useState(null);
+  const [gameStatus, setGameStatus] = useState(null);
+
+  if (!currentUser) {
+    return (
+      <JoinGame
+        setCurrentUser={setCurrentUser}
+        setGameId={setGameId}
+        setGameStatus={setGameStatus}
+      />
+    );
+  }
+
+  if (gameStatus === "waiting for players") {
+    return (
+      <WaitingForPlayers
+        gameId={gameId}
+        currentUser={currentUser}
+        setGameStatus={setGameStatus}
+      />
+    );
+  }
+
+  // Add other game pages here (e.g. Game, Game Over)
+
+  return <div>Error: Invalid game status</div>;
 }
 
 export default App;
